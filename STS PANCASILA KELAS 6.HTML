@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STS Pendidikan Pancasila - SDN 4 Penggung</title>
+    <style>
+        :root {
+            --primary: #1b5e20;
+            --primary-light: #4c8c4a;
+            --accent: #ff9800;
+            --bg: #f4f6f8;
+            --card-bg: #ffffff;
+            --text: #333333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        header h2, header h3 {
+            margin: 5px 0;
+            color: var(--primary);
+        }
+        .hidden { display: none !important; }
+        
+        /* Login Form */
+        #login-section {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 30px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+        }
+        .btn:hover { background-color: var(--primary-light); }
+
+        /* Timer & Info Bar */
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            background: #e8f5e9;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Question Styles */
+        .question-box {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .options label {
+            display: block;
+            padding: 8px 10px;
+            margin: 5px 0;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .options label:hover {
+            background: #f1f8e9;
+        }
+        textarea, input[type="text"].essay-input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        /* Result & Navigation */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .result-card {
+            background: #e8f5e9;
+            border: 2px solid var(--primary);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .correction-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .correct { background: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .incorrect { background: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; }
+            .btn, .nav-buttons, #login-section, .info-bar { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HALAMAN LOGIN -->
+    <div id="login-section">
+        <h2>SDN 4 PENGGUNG</h2>
+        <h3>Sumatif Tengah Semester (STS)</h3>
+        <p>Mata Pelajaran: Pendidikan Pancasila</p>
+        <p>Guru Penguji: <b>Sunarto, S.Ak, S.Pd</b></p>
+        <hr style="margin: 15px 0;">
+        <div class="form-group">
+            <label for="student-name">Nama Lengkap Siswa:</label>
+            <input type="text" id="student-name" placeholder="Masukkan nama Anda...">
+        </div>
+        <div class="form-group">
+            <label for="student-pass">Password:</label>
+            <input type="password" id="student-pass" placeholder="Masukkan password...">
+        </div>
+        <button class="btn" onclick="validateLogin()">Mulai Ujian</button>
+        <p id="login-error" style="color: red; font-size: 14px; margin-top: 10px;"></p>
+    </div>
+
+    <!-- HALAMAN UTAMA UJIAN -->
+    <div class="container hidden" id="exam-container">
+        <header>
+            <h2>PEMERINTAH KABUPATEN PACITAN</h2>
+            <h3>SUMATIF TENGAH SEMESTER GANJIL - SDN 4 PENGGUNG</h3>
+            <p>Mata Pelajaran: Pendidikan Pancasila | Kelas: VI | Guru Penguji: Sunarto, S.Ak, S.Pd</p>
+        </header>
+
+        <div class="info-bar">
+            <span id="display-name">Siswa: -</span>
+            <span id="timer-display">Status: Dapat Diakses Sekarang</span>
+        </div>
+
+        <form id="sts-form">
+            <div id="questions-wrapper"></div>
+
+            <div class="nav-buttons">
+                <button type="button" class="btn" style="background-color: #d32f2f;" onclick="submitExam()">Selesai dan Kumpulkan</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- HALAMAN HASIL & KOREKSI -->
+    <div class="container hidden" id="result-container">
+        <header>
+            <h2>HASIL SUMATIF TENGAH SEMESTER (STS)</h2>
+            <h3 id="res-name">Nama Siswa: -</h3>
+            <p>Pendidikan Pancasila | Guru Penguji: Sunarto, S.Ak, S.Pd | SDN 4 Penggung</p>
+        </header>
+
+        <div class="result-card">
+            <h2>Nilai Akhir Anda</h2>
+            <h1 id="final-score" style="font-size: 48px; margin: 10px 0; color: var(--primary);">0</h1>
+            <p id="score-details">Skor diperoleh: 0 dari 60</p>
+        </div>
+
+        <h3>Rincian Koreksi Jawaban:</h3>
+        <div id="correction-list"></div>
+
+        <div style="text-align: center; margin-top: 30px;" class="nav-buttons">
+            <button class="btn" style="background-color: #0288d1;" onclick="window.print()">Print / Cetak PDF</button>
+            <button class="btn" style="background-color: #2e7d32;" onclick="sendToWA()">Kirim ke WAGrup Kelas</button>
+        </div>
+    </div>
+
+    <script>
+        function checkSchedule() {
+            return true; // Akses dibuka kapan saja sesuai permintaan
+        }
+
+        function validateLogin() {
+            if (!checkSchedule()) return;
+
+            const name = document.getElementById('student-name').value.trim();
+            const pass = document.getElementById('student-pass').value.trim();
+            const errorElement = document.getElementById('login-error');
+
+            if (name === "") {
+                errorElement.innerText = "Silakan masukkan nama lengkap Anda!";
+                return;
+            }
+            if (pass !== "4penggung") {
+                errorElement.innerText = "Password salah! Gunakan password yang benar (4penggung).";
+                return;
+            }
+
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('exam-container').classList.remove('hidden');
+            document.getElementById('display-name').innerText = "Siswa: " + name;
+            loadQuestions();
+        }
+
+        // Data Soal Lengkap dari Lampiran Dokumen Pendidikan Pancasila
+        const questionsData = [
+            // PILIHAN GANDA (1-35)
+            { type: 'pg', no: 1, q: "Semua manusia setara di hadapan Tuhan. Pernyataan menunjukkan keterkaitan sila pertama dengan sila … Pancasila.", opts: ["A. Kedua", "B. Ketiga", "C. Keempat", "D. Kelima"], ans: "A" },
+            { type: 'pg', no: 2, q: "Berpartisipasi aktif dalam upacara bendera, pentas seni budaya, atau lomba 17 Agustus merupakan pengamalan sila…", opts: ["A. 2", "B. 3", "C. 4", "D. 5"], ans: "B" },
+            { type: 'pg', no: 3, q: "Orang tua memberi tugas rumah (menyapu, mencuci piring) secara merata kepada semua anak. Peristiwa tersebut sesuai dengan nilai Pancasila, yaitu...", opts: ["A. Musyawarah", "B. Kemanusiaan", "C. Persatuan", "D. Keadilan"], ans: "D" },
+            { type: 'pg', no: 4, q: "Tidak berisik saat ada tetangga yang sedang beribadah atau prosesi keagamaan merupakan pengalaman sila pertama Pancasila di lingkungan...", opts: ["A. Keluarga", "B. Rumah", "C. Sekolah", "D. Masyarakat"], ans: "D" },
+            { type: 'pg', no: 5, q: "Membiasakan berdoa sebelum makan, tidur dan belajar merupakan program pribadi dalam pengalaman sila…", opts: ["A. Pertama", "B. Kedua", "C. Ketiga", "D. Keempat"], ans: "B" },
+            { type: 'pg', no: 6, q: "Dalam program pribadi di rumah, kamu dan keluarga sering bermusyawarah untuk menentukkan kegiatan akhir pekan. Nilai Pancasila yang tercermin dalam kegiatan tersebut adalah…", opts: ["A. Kemanusiaan yang adil dan beradab", "B. Persatuan Indonesia", "C. Kerakyatan yang dipimpin oleh hikmat kebijaksanaan dalam permusyawaratan/perwakilan", "D. Keadilan sosial bagi seluruh rakyat Indonesia"], ans: "C" },
+            { type: 'pg', no: 7, q: "Dina dan Fina tetap berteman meskipun berbeda agama. Mereka membantu satu sama lain tanpa membeda-bedakan. Pertemanan mereka menunjukkan…", opts: ["A. Permusuhan", "B. Keragaman budaya", "C. Perbedaan usia", "D. Rasa persatuan"], ans: "D" },
+            { type: 'pg', no: 8, q: "Lala berencana pergi ke rumah neneknya, tetapi hari itu kelompok tarinya mendapat undangan dari pak Lurah untuk merayakan hari Kemerdekaan. Lala menunda rencananya. Ia menari bersama kelompoknya. Sikap yang ditunjukkan Lala adalah…", opts: ["A. Mau menang sendiri", "B. Mendahulukan kepentingan bersama", "C. Memaksakan kehendak", "D. Egois"], ans: "B" },
+            { type: 'pg', no: 9, q: "Kamu memiliki teman baru dari daerah yang berbeda. Ia belum lancar berbahasa Indonesia. Agar menunjukkan sikap sesuai Pancasila, kamu sebaiknya…", opts: ["A. Menertawakan saat berbicara", "B. Menyuruhnya belajar sendiri", "C. Mengajaknya bermain agar lebih percaya diri", "D. Tidak bergaul dengannya"], ans: "C" },
+            { type: 'pg', no: 10, q: "Mengutamakan membeli barang-barang buatan dalam negeri atau daerah sendiri akan meningkatkan pemerataan ekonomi. Sikap ini selaras dengan Pancasila sila…", opts: ["A. Kedua", "B. Ketiga", "C. Keempat", "D. Kelima"], ans: "B" },
+            { type: 'pg', no: 11, q: "Menulis surat kepada orang tua yang berisi ucapan terima kasih dan doa merupakan pengalaman nilai sila…", opts: ["A. Pertama dan kedua", "B. Ketiga dan kelima", "C. Keempat", "D. Pertama dan ketiga"], ans: "A" },
+            { type: 'pg', no: 12, q: "Sila Kemanusiaan yang adil dan beradab berhubungan erat dengan sila Ketuhanan yang Maha Esa karena…", opts: ["A. Kemanusiaan hanya bisa dijalankan di tempat ibadah", "B. Nilai kemanusiaan harus dilandasi keimanan kepada Tuhan", "C. Kemanusiaan tidak berhubungan dengan keagamaan", "D. Keimanan hanya urusan pribadi"], ans: "B" },
+            { type: 'pg', no: 13, q: "Pancasila menjadi sumber nilai, norma, kaidah bagi segala peraturan hukum yang berlaku di Indonesia. Pernyataan berikut menunjukkan kedudukan Pancasila sebagai…", opts: ["A. Dasar negara", "B. Ideologi negara", "C. Pandangan hidup", "D. Kepribadian bangsa"], ans: "A" },
+            { type: 'pg', no: 14, q: "Sikap menghargai dan menghormati pemeluk agama lain melakukan ibadah, merupakan bentuk pengamalan Pancasila, khususnya sila…", opts: ["A. Ketuhanan yang Maha Esa", "B. Kemanusiaan yang adil dan beradab", "C. Persatuan Indonesia", "D. Keadilan sosial bagi seluruh rakyat Indonesia"], ans: "A" },
+            { type: 'pg', no: 15, q: "Keluarga Pak Toni akan mengadakan piknik keluarga, namun tujuannya belum ditentukan. Pak Toni mengumpulkan anggota keluarga untuk bermusyawarah. Hal ini menunjukkan musyawarah merupakan cara untuk…", opts: ["A. Mencari kesalahan", "B. Merumuskan masalah", "C. Menyelesaikan masalah", "D. Menimbun masalah"], ans: "C" },
+            { type: 'pg', no: 16, q: "Keputusan bersama harus dilaksanakan dengan penuh tanggung jawab. Contoh hasil keputusan bersama dalam musyawarah adalah …", opts: ["A. Bekerja sama mengerjakan soal ulangan", "B. Mengatur jadwal belajar", "C. Membeli makanan di kantin", "D. Melaksanakan kegiatan perkemahan bersama"], ans: "D" },
+            { type: 'pg', no: 17, q: "Ketika sedang berjalan Gilang menemukan dompet berisi uang yang cukup banyak. Sikap Gilang sebaiknya…", opts: ["A. Tidak diambil dan pura-pura tidak tahu", "B. Mengembalikan dompet tersebut kepada pemiliknya", "C. Mengambil dompet tersebut dan menyimpannya", "D. Menyingkirkan dompet dari tengah jalan"], ans: "B" },
+            { type: 'pg', no: 18, q: "Nilai-nilai Pancasila telah ada sebelum Indonesia merdeka. Hal ini menunjukkan bahwa Pancasila…", opts: ["A. Dibuat setelah kemerdekaan", "B. Berasal dari pengaruh luar negeri", "C. Berakar dari budaya bangsa sendiri", "D. Hanya berlaku untuk masa lalu"], ans: "C" },
+            { type: 'pg', no: 19, q: "“Tidak boleh ada peraturan yang bertentangan dengan Pancasila” berarti…", opts: ["A. Pemerintah bebas membuat peraturan apa pun", "B. Semua peraturan harus sesuai nilai-nilai Pancasila", "C. Pancasila hanya digunakan untuk pendidikan", "D. Rakyat tidak perlu menaati hukum"], ans: "B" },
+            { type: 'pg', no: 20, q: "Sekolah Tunas Bangsa menyediakan fasilitas ibadah untuk semua agama. Pihak sekolah menjadikan Pancasila sebagai arah kebijakan sekolah. Hal tersebut menunjukkan peran Pancasila sebagai…", opts: ["A. Dasar negara", "B. Ideologi negara", "C. Pandangan hidup bangsa", "D. Penegak keadilan"], ans: "C" },
+            { type: 'pg', no: 21, q: "Dalam kehidupan sehari-hari, contoh penerapan Pancasila sebagai ideologi negara adalah…", opts: ["A. Menjalankan ibadah hanya pada hari tertentu", "B. Meniru budaya luar tanpa menyesuaikan nilai bangsa", "C. Menyelesaikan perbedaan pendapat dengan musyawarah", "D. Mementingkan kepentingan pribadi di atas kepentingan umum"], ans: "C" },
+            { type: 'pg', no: 22, q: "Pancasila menjadi sumber segala hukum yang berlaku di Indonesia. Hal ini menunjukkan kedudukan Pancasila sebagai…", opts: ["A. Dasar negara", "B. Pandangan hidup", "C. Ideologi negara", "D. Peraturan pemerintah"], ans: "A" },
+            { type: 'pg', no: 23, q: "Contoh penerapan nilai-nilai Pancasila di lingkungan keluarga adalah…", opts: ["A. Membiarkan sampah berserakan", "B. Mengganggu kakak belajar", "C. Membuat barang berantakan", "D. Menghormati anggota keluarga yang lebih tua"], ans: "D" },
+            { type: 'pg', no: 24, q: "Pengamalan nilai-nilai sila keempat yang harus dikembangkan dalam kehidupan bermasyarakat contohnya adalah…", opts: ["A. Suka memberikan pertolongan", "B. Menghormati umat beragama lain", "C. Mencintai tanah air", "D. Melaksanakan setiap hasil musyawarah dengan tanggung jawab"], ans: "D" },
+            { type: 'pg', no: 25, q: "Pedoman hidup bangsa Indonesia dalam menjalani kehidupan bernegara adalah…", opts: ["A. UUD 1945", "B. Pancasila", "C. Bhinneka Tunggal Ika", "D. Lagu kebangsaan"], ans: "B" },
+            { type: 'pg', no: 26, q: "Upacara bendera rutin dilaksanakan setiap Senin pagi. Sesuai nilai Pancasila, murid yang baik akan melaksanakan upacara dengan…", opts: ["A. Toleransi", "B. Peduli sesama", "C. Cinta tanah air", "D. Keimanan dan ketaqwaan"], ans: "C" },
+            { type: 'pg', no: 27, q: "Seorang murid terlibat aksi sosial menggalang dana korban banjir dari teman sekelas dan guru. Tindakan tersebut mencerminkan Pancasila sila…", opts: ["A. Kedua", "B. Ketiga", "C. Keempat", "D. Kelima"], ans: "A" },
+            { type: 'pg', no: 28, q: "Berpartisipasi dalam pemilihan ketua kelas merupakan sikap yang sesuai Pancasila sila…", opts: ["A. Keempat", "B. Ketiga", "C. Kedua", "D. Pertama"], ans: "A" },
+            { type: 'pg', no: 29, q: "Pancasila dapat mempersatukan bangsa Indonesia yang berbeda suku, agama, dan budaya karena…", opts: ["A. Memaksa semua orang menjadi sama", "B. Semua orang memiliki adat yang sama", "C. Hanya digunakan oleh pemerintah", "D. Pancasila menghargai keberagaman dan menumbuhkan persatuan"], ans: "D" },
+            { type: 'pg', no: 30, q: "Ilham beragama Islam, Widi beragama Kristen. Ilham melihat Widi terpleset dan terjatuh. Tindakan yang seharusnya dilakukan Ilham adalah…", opts: ["A. Menolong secara sukarela", "B. Menolongnya karena kaya", "C. Tidak menolong karena beda agama", "D. Tidak menolong karena salahnya sendiri"], ans: "A" },
+            { type: 'pg', no: 31, q: "Pengamalan Pancasila sebagai pandangan hidup bangsa dalam kehidupan sehari-hari adalah…", opts: ["A. Membuat peraturan sesuai nilai keadilan", "B. Menghafalkan lima sila tanpa melaksanakan", "C. Menghormati tetangga yang berbeda agama", "D. Memaksa tetangga untuk memeluk agama yang sama"], ans: "C" },
+            { type: 'pg', no: 32, q: "Rina mengajak teman-temannya membuat poster gotong royong dan cinta lingkungan. Perbuatan Rina menunjukkan pengamalan Pancasila sila…", opts: ["A. Persatuan Indonesia", "B. Ketuhanan yang Maha Esa", "C. Keadilan sosial", "D. Kerakyatan"], ans: "A" },
+            { type: 'pg', no: 33, q: "Tetanggamu membunyikan musik keras-keras padahal tetangga sebelah sedang sakit. Sikap yang kamu lakukan adalah…", opts: ["A. Diam saja", "B. Menutup jendela rapat-rapat", "C. Menasihati tetangga dengan sopan", "D. Ikut membunyikan radio keras-keras"], ans: "C" },
+            { type: 'pg', no: 34, q: "Dalam pembelajaran di kelas, guru menekankan pentingnya menghargai perbedaan pendapat dan bekerja sama. Nilai Pancasila yang tampak adalah…", opts: ["A. Musyawarah untuk mufakat", "B. Meningkatkan keimanan", "C. Menjaga keadilan", "D. Cinta tanah air"], ans: "A" },
+            { type: 'pg', no: 35, q: "Pernyataan:\n(1) Pemerintah memberikan program wajib belajar 9 tahun\n(2) Menghormati orang yang beribadah\n(3) Pemberian Kartu Indonesia Sehat tepat sasaran\n(4) Tidak membeda-bedakan status sosial\n(5) Menggunakan produk dalam negeri\nPengamalan sila kelima ditunjukkan nomor…", opts: ["A. (1), (2), dan (3)", "B. (2), (3), dan (5)", "C. (3), (4), dan (5)", "D. (1), (3), dan (4)"], ans: "D" },
+
+            // ISIAN SINGKAT (36-45)
+            { type: 'isian', no: 36, q: "Sila-sila Pancasila merupakan kesatuan yang tidak dapat...", ans: "dipisahkan", reading: "" },
+            { type: 'isian', no: 37, q: "Sikap menolong teman tanpa membeda-bedakan merupakan hubungan antara sila pertama dan sila...", ans: "kedua", reading: "" },
+            { type: 'isian', no: 38, q: "Menolong korban bencana tanpa membeda-bedakan suku, agama, atau ras merupakan perwujudan nilai...", ans: "kemanusiaan", reading: "" },
+            { type: 'isian', no: 39, q: "Sikap saling menghargai akan membuat kehidupan menjadi ... dan damai.", ans: "rukun", reading: "" },
+            { type: 'isian', no: 40, q: "Sikap membeda-bedakan teman dapat menimbulkan ... yang merugikan semua pihak.", ans: "perselisihan", reading: "" },
+            { type: 'isian', no: 41, q: "Pancasila menjadi pedoman hidup bangsa Indonesia, yang artinya Pancasila berfungsi sebagai...", ans: "pandangan hidup bangsa", reading: "" },
+            { type: 'isian', no: 42, q: "Mengumpulkan donasi untuk korban banjir merupakan pengamalan Pancasila sila...", ans: "kedua", reading: "" },
+            { type: 'isian', no: 43, q: "Menjaga kerukunan dan kekompakan dengan teman di sekolah merupakan pengamalan sila...", ans: "ketiga", reading: "" },
+            { type: 'isian', no: 44, q: "Berbagai suku bangsa yang memiliki beragam bahasa daerah dapat berkomunikasi dengan menggunakan bahasa...", ans: "indonesia", reading: "" },
+            { type: 'isian', no: 45, q: "Simbol padi dan kapas pada lambang Pancasila menggambarkan cita-cita untuk hidup ... dan ...", ans: "adil dan makmur", reading: "" },
+
+            // URAIAN (46-50)
+            { type: 'uraian', no: 46, q: "Mengapa sikap toleransi sangat penting dalam menjaga keutuhan bangsa Indonesia yang beragam?", ans: "toleransi membuat manusia hidup damai, saling menghargai dan menghormati", reading: "" },
+            { type: 'uraian', no: 47, q: "Mengapa Pancasila disebut sebagai pemersatu bangsa?", ans: "karena Pancasila menyatukan perbedaan suku, agama, dan budaya", reading: "" },
+            { type: 'uraian', no: 48, q: "Jelaskan yang dimaksud Pancasila sebagai pandangan hidup!", ans: "pedoman sikap masyarakat Indonesia agar selalu menjiwai nilai-nilai luhur Pancasila", reading: "" },
+            { type: 'uraian', no: 49, q: "Pada pemilihan ketua kelas, kamu kalah suara dan tidak terpilih. Bagaimana sikap yang seharusnya kamu lakukan?", ans: "berlapang dada menerima hasil musyawarah dan memberikan selamat", reading: "" },
+            { type: 'uraian', no: 50, q: "Gotong royong memperbaiki rumah warga tanpa memandang kaya atau miskin mencerminkan nilai Pancasila apa? Jelaskan!", ans: "sila kedua dan kelima", reading: "" }
+        ];
+
+        function loadQuestions() {
+            const wrapper = document.getElementById('questions-wrapper');
+            let html = '';
+
+            // Bagian I: Pilihan Ganda
+            html += '<h3 style="color:var(--primary)">I. PILIHAN GANDA</h3>';
+            questionsData.filter(item => item.type === 'pg').forEach(item => {
+                html += `<div class="question-box">`;
+                html += `<p><b>${item.no}. ${item.q}</b></p><div class="options">`;
+                item.opts.forEach(opt => {
+                    const optLetter = opt.charAt(0);
+                    html += `<label><input type="radio" name="q${item.no}" value="${optLetter}"> ${opt}</label>`;
+                });
+                html += `</div></div>`;
+            });
+
+            // Bagian II: Isian Singkat
+            html += '<h3 style="color:var(--primary); margin-top:30px;">II. ISIAN SINGKAT</h3>';
+            questionsData.filter(item => item.type === 'isian').forEach(item => {
+                html += `<div class="question-box">`;
+                html += `<p><b>${item.no}. ${item.q}</b></p>`;
+                html += `<input type="text" class="essay-input" name="q${item.no}" placeholder="Tulis jawaban singkat di sini...">`;
+                html += `</div>`;
+            });
+
+            // Bagian III: Uraian
+            html += '<h3 style="color:var(--primary); margin-top:30px;">III. SOAL URAIAN</h3>';
+            questionsData.filter(item => item.type === 'uraian').forEach(item => {
+                html += `<div class="question-box">`;
+                html += `<p><b>${item.no}. ${item.q}</b></p>`;
+                html += `<textarea name="q${item.no}" rows="3" placeholder="Tulis jawaban uraian di sini..."></textarea>`;
+                html += `</div>`;
+            });
+
+            wrapper.innerHTML = html;
+        }
+
+        function submitExam() {
+            if (!confirm("Apakah Anda yakin ingin menyelesaikan dan mengumpulkan jawaban ujian ini?")) return;
+
+            let totalScore = 0;
+            let correctionHtml = '';
+            const studentName = document.getElementById('student-name').value;
+
+            questionsData.forEach(item => {
+                const fieldName = 'q' + item.no;
+                let userAnswer = "";
+                let isCorrect = false;
+
+                if (item.type === 'pg') {
+                    const selectedOpt = document.querySelector(`input[name="${fieldName}"]:checked`);
+                    if (selectedOpt) userAnswer = selectedOpt.value;
+                    
+                    if (userAnswer === item.ans) {
+                        totalScore += 1; // Pilihan ganda bobot 1 (Maks 35)
+                        isCorrect = true;
+                    }
+                } else if (item.type === 'isian') {
+                    const inputElem = document.querySelector(`input[name="${fieldName}"]`);
+                    if (inputElem) userAnswer = inputElem.value.trim().toLowerCase();
+                    
+                    if (userAnswer.includes(item.ans.toLowerCase())) {
+                        totalScore += 2; // Isian bobot 2 (Maks 20)
+                        isCorrect = true;
+                    }
+                } else if (item.type === 'uraian') {
+                    const textElem = document.querySelector(`textarea[name="${fieldName}"]`);
+                    if (textElem) userAnswer = textElem.value.trim();
+                    
+                    if (userAnswer.length > 5) {
+                        totalScore += 3; // Uraian bobot 3 (Maks 15)
+                        isCorrect = true;
+                    }
+                }
+
+                correctionHtml += `
+                    <div class="correction-item ${isCorrect ? 'correct' : 'incorrect'}">
+                        <p><b>Soal No. ${item.no}</b>: ${item.q}</p>
+                        <p>Jawaban Anda: <b>${userAnswer || '(Tidak dijawab)'}</b></p>
+                        <p>Kunci/Acuan Benar: <b>${item.ans}</b></p>
+                    </div>
+                `;
+            });
+
+            // Konversi nilai skala 100 berdasarkan pedoman penskoran (Skor/60)*100
+            const finalScaledScore = Math.round((totalScore / 60) * 100);
+
+            document.getElementById('exam-container').classList.add('hidden');
+            document.getElementById('result-container').classList.remove('hidden');
+            document.getElementById('res-name').innerText = "Nama Siswa: " + studentName;
+            document.getElementById('final-score').innerText = finalScaledScore;
+            document.getElementById('score-details').innerText = `Skor Mentah: ${totalScore} dari 60 Maksimal | Nilai Akhir: ${finalScaledScore}`;
+            document.getElementById('correction-list').innerHTML = correctionHtml;
+            window.scrollTo(0, 0);
+        }
+
+        function sendToWA() {
+            const studentName = document.getElementById('student-name').value;
+            const score = document.getElementById('final-score').innerText;
+            const text = `LAPORAN NILAI STS PENDIDIKAN PANCASILA\nSDN 4 PENGGUNG\n\nNama Siswa: ${studentName}\nGuru Penguji: Sunarto, S.Ak, S.Pd\nNilai Akhir: ${score}\n\nTelah selesai mengerjakan ujian secara online dan interaktif.`;
+            const encodedText = encodeURIComponent(text);
+            window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
+        }
+    </script>
+</body>
+</html>
